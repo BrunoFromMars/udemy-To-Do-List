@@ -1,25 +1,29 @@
+//requring the required modules for app
 const express = require("express");
-const bosyParser = require("body-parser");
+const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const date = require(__dirname + "/date.js");
+
+//creating an instant of the express module
 const app = express();
-let items = ["Buy Food", "Cook Food", "Eat Food"];
-let workItems= [];
-app.use(bosyParser.urlencoded({extended:true}));
+
+//Declaring the items and workItems array
+const items = ["Buy Food", "Cook Food", "Eat Food"];
+const workItems = [];
+
+//using "use" method for body-parser and express modules
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(express.static("public"));
 
+// Using the "set" method on app to set the view engine to ejs
 app.set('view engine', 'ejs');
 
+//GET method for home route("/")
 app.get("/", function(req, res) {
 
-  let today = new Date();
-
-  let options = {
-    weekday: "long",
-    day: "numeric",
-    month: "long"
-  };
-
-  let day = today.toLocaleDateString("en-IN", options);
+  let day = date.getDate();
 
   res.render("list", {
     listTitle: day,
@@ -27,7 +31,7 @@ app.get("/", function(req, res) {
   });
 });
 
-
+// GET method for work route("/work")
 app.get("/work", function(req, res) {
   res.render("list", {
     listTitle: "Work List",
@@ -35,35 +39,36 @@ app.get("/work", function(req, res) {
   });
 });
 
+// GET method for about route("/about")
 app.get("/about", function(req, res) {
   res.render("about");
 });
 
 
+// POST method for home route("/")
 app.post("/", function(req, res) {
 
-let item = req.body.newItem;
+  const item = req.body.newItem;
 
-if(req.body.list === "work"){
-  workItems.push(item);
-  res.redirect("/work")
-}else{
-  items.push(item);
-  res.redirect("/");
-}
+  if (req.body.list === "work") {
+    workItems.push(item);
+    res.redirect("/work")
+  } else {
+    items.push(item);
+    res.redirect("/");
+  }
 
-
-  // console.log(item);
-  // items.push(item);
-  // res.redirect("/");
 });
 
+// POST method for wrok route("/work")
 app.post("/work", function(req, res) {
-  let item = req.body.newItem;
+  const item = req.body.newItem;
   workItems.push(item);
   res.redirect("/work")
 });
 
+
+// Spinning of server at localhost on port=3000
 app.listen(3000, function() {
   console.log("Server is running on http://localhost:3000");
 });
